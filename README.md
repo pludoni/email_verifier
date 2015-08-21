@@ -14,6 +14,7 @@ It also:
 
 Add this line to your application's Gemfile:
 
+    # place it at the bottom of rails/activesupport if you're working with them.
     gem 'email_verifier'
 
 And then execute:
@@ -26,7 +27,7 @@ Or install it yourself as:
 
 ## Usage
 
-To get info about realness of given email address, email_verifier connects with a mail server that email's domain points to and pretends to send an email. Some smtp servers will not allow you to do this if you will not present yourself as a real user. 
+To get info about realness of given email address, email_verifier connects with a mail server that email's domain points to and pretends to send an email. Some smtp servers will not allow you to do this if you will not present yourself as a real user.
 
 First thing you need to set up is placing something like this either in initializer or in application.rb file:
 
@@ -35,7 +36,7 @@ First thing you need to set up is placing something like this either in initiali
     end
 
 Then just put this in your model e. g:
-    
+
     validates_email_realness_of :email
 
 Or - if you'd like to use it outside of your models:
@@ -44,6 +45,19 @@ Or - if you'd like to use it outside of your models:
 
 This method will return true or false, or  will throw an exception with nicely detailed info about what's wrong.
 
+## Important: problems when using locally
+
+When you're trying to use it from an IP that a server either cannot reach or trust (in any way) - then it returns 421 service not available (connection refused, too many connections) instead of letting you connect. Because of this you should most probably always be using it on a machine that the other SMTP server can reach.
+
+## Disabling on Test
+
+If you are using Rails in test environment, the check will always succeed, so that your CI servers will not try to contact SMTP servers.
+You can change that behavior in the configuration block:
+
+    EmailVerifier.config do |config|
+      config.test_mode = Rails.env.test?
+    end
+
 ## Customizing messages
 
 Add these lines to your locale file in config/locales:
@@ -51,7 +65,7 @@ Add these lines to your locale file in config/locales:
     it:
       errors:
         messages:
-          email_verifier: 
+          email_verifier:
             email_not_real: must point to a real mail account
             out_of_mail_server: appears to point to dead mail server
             no_mail_server: appears to point to domain which doesn't handle e-mail
@@ -69,6 +83,9 @@ Please send questions to [kamil@endpoint.com](mailto:kamil@endpoint.com)
 
 * Maciej Walusiak ([https://github.com/Rabsztok]())
 * Francesco Gnarra ([https://github.com/francescognarra]())
+* Stefan Wienert ([https://github.com/zealot128]())
+* [https://github.com/mzabaljauregui]()
+* Ethan Czahor ([https://github.com/czahor]())
 
 ## Contributing yourself
 
