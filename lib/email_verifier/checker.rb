@@ -78,6 +78,8 @@ class EmailVerifier::Checker
     rescue => e
       if e.message[/^550/]
         return false
+      elsif e.message[/^(450|421).*greylist/i]
+        return true
       else
         raise EmailVerifier::FailureException.new(e.message)
       end
